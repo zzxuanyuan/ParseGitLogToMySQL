@@ -1,0 +1,2884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bug #1: gpf in tcp_sendpage - Linux kernel client - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="l1Qv6iGjhKQsQX6CaWltlaxFts3GdATtYPtEHXBpnrI=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/1.atom" rel="alternate" title="Linux kernel client - Bug #1: gpf in tcp_sendpage" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph-kclient/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph-kclient/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1><a href="/projects/ceph?jump=issues" class="root">Ceph</a> » Linux kernel client</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph-kclient" class="overview">Overview</a></li>
+<li><a href="/projects/ceph-kclient/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph-kclient/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph-kclient" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/projects/ceph-kclient/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph-kclient/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph-kclient/issues/calendar" class="calendar">Calendar</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph-kclient/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph-kclient/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph-kclient/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph-kclient/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph-kclient/issues?query_id=26" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph-kclient/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph-kclient/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph-kclient/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph-kclient/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph-kclient/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph-kclient/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-1-watcher"></span>
+
+
+</div>
+
+
+<h2>Bug #1</h2>
+
+<div class="issue status-5 priority-4 priority-default closed details">
+
+  
+
+<div class="subject">
+<div><h3>gpf in tcp_sendpage</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 10:34 am">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph-kclient/activity?from=2010-11-09" title="11/09/2010 10:26 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Closed</td><th class="start-date">Start date:</th><td class="start-date">04/09/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Normal</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to">-</td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version"><a href="/versions/2">v2.6.34</a></td><th></th><td></td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>Suite:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Severity:</th><td></td>
+	<th>ceph-qa-suite:</th><td></td>
+</tr>
+
+
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>[540049.710050] general protection fault: 0000 [<a href="/issues/1" class="issue status-5 priority-4 priority-default closed" title="gpf in tcp_sendpage (Closed)">#1</a>] PREEMPT SMP <br />[540049.711610] last sysfs file: /sys/kernel/uevent_seqnum<br />[540049.711610] CPU 1 <br />[540049.711610] Modules linked in: aes_x86_64 aes_generic ceph fan ac battery psmouse ide_pci_generic ehci_hcd ohci_hcd thermal button processor<br />[540049.711610] <br />[540049.711610] Pid: 2622, comm: ceph-msgr/1 Not tainted 2.6.34-rc3 <a href="/issues/25" class="issue status-1 priority-3 priority-lowest" title="mdsc: mempool for cap writeback? (New)">#25</a> H8SSL-I2/H8SSL-I2<br />[540049.711610] RIP: 0010:[&lt;ffffffff813be784&gt;]  [&lt;ffffffff813be784&gt;] tcp_sendpage+0x327/0x5d4<br />[540049.711610] RSP: 0018:ffff88010eb4dbe0  EFLAGS: 00010246<br />[540049.711610] RAX: ffffffff816ded10 RBX: ffff880110239248 RCX: 00000000000016a0<br />[540049.711610] RDX: 6b6b6b6b6b6b6b6b RSI: 00000000000005a8 RDI: 0000000000000020<br />[540049.711610] RBP: ffff88010eb4dc70 R08: 0000000000000000 R09: 0000000000000000<br />[540049.711610] R10: ffffffff816ded10 R11: ffff88010cbba4c0 R12: ffff880006652de0<br />[540049.711610] R13: 0000000000000877 R14: 0000000000000006 R15: 0000000000000789<br />[540049.711610] FS:  00007f71925306e0(0000) GS:ffff880002800000(0000) knlGS:0000000000000000<br />[540049.711610] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b<br />[540049.711610] CR2: 00000000004628bd CR3: 000000010e9ca000 CR4: 00000000000006e0<br />[540049.711610] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000<br />[540049.711610] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400<br />[540049.711610] Process ceph-msgr/1 (pid: 2622, threadinfo ffff88010eb4c000, task ffff88010cbba4c0)<br />[540049.711610] Stack:<br />[540049.711610]  ffff88010eb4dbf0 ffff88010eb4dfd8 0000000000000000 ffff880110239420<br />[540049.711610] &lt;0&gt; 0000c040a006eea7 0000000000000877 00000789101f56e8 0000000000000000<br />[540049.711610] &lt;0&gt; 00062222000005a8 6b6b6b6b6b6b6b6b 6b6b6b6b6b6b6b6b 0000000000000000<br />[540049.711610] Call Trace:<br />[540049.711610]  [&lt;ffffffff813865b1&gt;] kernel_sendpage+0x16/0x1f<br />[540049.711610]  [&lt;ffffffffa006f49a&gt;] try_write+0x63f/0x1084 [ceph]<br />[540049.711610]  [&lt;ffffffffa0070835&gt;] con_work+0x126/0x6bc [ceph]<br />[540049.711610]  [&lt;ffffffff810477ea&gt;] worker_thread+0x1e8/0x2fa<br />[540049.711610]  [&lt;ffffffff81047791&gt;] ? worker_thread+0x18f/0x2fa<br />[540049.711610]  [&lt;ffffffffa007070f&gt;] ? con_work+0x0/0x6bc [ceph]<br />[540049.711610]  [&lt;ffffffff8104a8b0&gt;] ? autoremove_wake_function+0x0/0x38<br />[540049.711610]  [&lt;ffffffff81047602&gt;] ? worker_thread+0x0/0x2fa<br />[540049.711610]  [&lt;ffffffff8104a57e&gt;] kthread+0x7d/0x85<br />[540049.711610]  [&lt;ffffffff81003794&gt;] kernel_thread_helper+0x4/0x10<br />[540049.711610]  [&lt;ffffffff81428700&gt;] ? restore_args+0x0/0x30<br />[540049.711610]  [&lt;ffffffff8104a501&gt;] ? kthread+0x0/0x85<br />[540049.711610]  [&lt;ffffffff81003790&gt;] ? kernel_thread_helper+0x0/0x10<br />[540049.711610] Code: 00 45 85 c0 74 21 41 8b 94 24 a4 00 00 00 41 8d 46 ff 49 03 94 24 a8 00 00 00 48 98 48 c1 e0 04 44 01 6c 02 3c eb 62 48 8b 55 b8 &lt;66&gt; 83 3a 00 79 04 48 8b 52 10 8b 42 08 85 c0 75 04 0f 0b eb fe <br />[540049.711610] RIP  [&lt;ffffffff813be784&gt;] tcp_sendpage+0x327/0x5d4<br />[540049.711610]  RSP &lt;ffff88010eb4dbe0&gt;<br />[540049.974749] ---[ end trace 922ebfcfea4fcf57 ]---</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-3" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/1#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 11:00 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> set to <i>4</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-10" class="journal has-notes">
+    <div id="note-2">
+    <h4><a href="/issues/1#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 02:02 pm">almost 5 years</a> ago</h4>
+
+    <div class="wiki" id="journal-10-notes"><p>kernel dump didn't match running kernel.</p>
+
+
+	<p>saw this pop up immediately after starting bonnie.sh... but not after rebooting with updated kernel.  i <em>think</em> it was the same version, but it's not happening anymore.. maybe just a problem with module vs kernel mismatch?</p></div>
+    </div>
+  </div>
+  
+  <div id="change-17" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/1#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 04:23 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> changed from <i>4</i> to <i>v2.6.34</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-20" class="journal has-notes">
+    <div id="note-4">
+    <h4><a href="/issues/1#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/4" class="user active">Yehuda Sadeh</a> <a href="/projects/ceph-kclient/activity?from=2010-04-12" title="04/12/2010 10:11 am">almost 5 years</a> ago</h4>
+
+    <div class="wiki" id="journal-20-notes"><p>Most likely kernel/module mismatch. Objdump didn't match oops message, I think this should be resolved-invalid unless proven otherwise.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-25" class="journal has-details">
+    <div id="note-5">
+    <h4><a href="/issues/1#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-12" title="04/12/2010 01:45 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-26" class="journal has-details">
+    <div id="note-6">
+    <h4><a href="/issues/1#note-6" class="journal-link">#6</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-12" title="04/12/2010 01:46 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-43" class="journal has-details">
+    <div id="note-7">
+    <h4><a href="/issues/1#note-7" class="journal-link">#7</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 11:50 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Closed</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-115" class="journal has-details">
+    <div id="note-8">
+    <h4><a href="/issues/1#note-8" class="journal-link">#8</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-05-03" title="05/03/2010 12:09 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-566" class="journal has-notes">
+    <div id="note-9">
+    <h4><a href="/issues/1#note-9" class="journal-link">#9</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-07-05" title="07/05/2010 12:28 pm">over 4 years</a> ago</h4>
+
+    <div class="wiki" id="journal-566-notes"><p>I think this was actually <a href="/issues/252" class="issue status-3 priority-5 priority-high3 closed" title="GFP at tcp_sendpage+0x327/0x5d3 (Resolved)">#252</a>, now fixed.</p></div>
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-1-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/1.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/1.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bug #2: BUG at fs/ceph/caps.c:2178 - Linux kernel client - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="UhNbrGk5tqib/WO3MWW5OXZvO0B1X1C3buNODOx8HOM=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/2.atom" rel="alternate" title="Linux kernel client - Bug #2: BUG at fs/ceph/caps.c:2178" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph-kclient/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph-kclient/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1><a href="/projects/ceph?jump=issues" class="root">Ceph</a> » Linux kernel client</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph-kclient" class="overview">Overview</a></li>
+<li><a href="/projects/ceph-kclient/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph-kclient/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph-kclient" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/projects/ceph-kclient/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph-kclient/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph-kclient/issues/calendar" class="calendar">Calendar</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph-kclient/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph-kclient/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph-kclient/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph-kclient/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph-kclient/issues?query_id=26" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph-kclient/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph-kclient/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph-kclient/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph-kclient/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph-kclient/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph-kclient/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-2-watcher"></span>
+
+
+</div>
+
+
+<h2>Bug #2</h2>
+
+<div class="issue status-5 priority-4 priority-default closed details">
+
+  
+
+<div class="subject">
+<div><h3>BUG at fs/ceph/caps.c:2178</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 10:34 am">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph-kclient/activity?from=2010-11-09" title="11/09/2010 10:26 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Closed</td><th class="start-date">Start date:</th><td class="start-date">04/09/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Normal</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to">-</td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version"><a href="/versions/2">v2.6.34</a></td><th></th><td></td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>Suite:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Severity:</th><td></td>
+	<th>ceph-qa-suite:</th><td></td>
+</tr>
+
+
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>[563217.493362] ------------[ cut here ]------------<br />[563217.496350] kernel BUG at fs/ceph/caps.c:2178!<br />[563217.496350] invalid opcode: 0000 [<a href="/issues/1" class="issue status-5 priority-4 priority-default closed" title="gpf in tcp_sendpage (Closed)">#1</a>] PREEMPT SMP <br />[563217.496350] last sysfs file: /sys/kernel/uevent_seqnum<br />[563217.496350] CPU 0 <br />[563217.496350] Modules linked in: ceph aes_x86_64 aes_generic fan ac battery ehci_hcd container uhci_hcd thermal button processor [last unloaded: ceph]<br />[563217.496350] <br />[563217.496350] Pid: 2748, comm: ceph-msgr/0 Not tainted 2.6.34-rc3 <a href="/issues/25" class="issue status-1 priority-3 priority-lowest" title="mdsc: mempool for cap writeback? (New)">#25</a> PDSMi+/PDSMi<br />[563217.496350] RIP: 0010:[&lt;ffffffffa00f0759&gt;]  [&lt;ffffffffa00f0759&gt;] ceph_put_wrbuffer_cap_refs+0x17e/0x378 [ceph]<br />[563217.496350] RSP: 0018:ffff88011a40da00  EFLAGS: 00010246<br />[563217.496350] RAX: ffff88011cf79790 RBX: ffff88011515cfb8 RCX: ffff88011cf79790<br />[563217.496350] RDX: ffff88011a9c9d38 RSI: 00000000ffffffff RDI: ffff88011a026d00<br />[563217.496350] RBP: ffff88011a40dab0 R08: 0000000000000002 R09: 0000000000000000<br />[563217.496350] R10: ffffea0003bf10d8 R11: ffff88011a026d00 R12: 0000000000000000<br />[563217.496350] R13: 0000000000000001 R14: ffff88011cf79540 R15: ffff88011cf79780<br />[563217.496350] FS:  0000000000000000(0000) GS:ffff880002600000(0000) knlGS:0000000000000000<br />[563217.496350] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b<br />[563217.496350] CR2: 00007fcf9ffe5350 CR3: 0000000001683000 CR4: 00000000000006f0<br />[563217.496350] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000<br />[563217.496350] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400<br />[563217.496350] Process ceph-msgr/0 (pid: 2748, threadinfo ffff88011a40c000, task ffff88011a026d00)<br />[563217.496350] Stack:<br />[563217.496350]  000000000000000b ffffea0003bf10d8 ffff88011a40da20 ffffffff81058099<br />[563217.496350] &lt;0&gt; ffff88011a40da50 0000000000000286 ffff88011a40da50 ffffea0003bf10d8<br />[563217.496350] &lt;0&gt; 000000011cf79bc0 ffff88011ca6ae78 ffff88011a40da90 ffffffff81085a3d<br />[563217.496350] Call Trace:<br />[563217.496350]  [&lt;ffffffff81058099&gt;] ? trace_hardirqs_on+0xd/0xf<br />[563217.496350]  [&lt;ffffffff81085a3d&gt;] ? test_clear_page_writeback+0xf5/0x105<br />[563217.496350]  [&lt;ffffffffa00e8c7b&gt;] writepages_finish+0x28e/0x44f [ceph]<br />[563217.496350]  [&lt;ffffffff81055aa7&gt;] ? debug_mutex_free_waiter+0x4f/0x53<br />[563217.496350]  [&lt;ffffffff81058099&gt;] ? trace_hardirqs_on+0xd/0xf<br />[563217.496350]  [&lt;ffffffff81058099&gt;] ? trace_hardirqs_on+0xd/0xf<br />[563217.496350]  [&lt;ffffffffa010498d&gt;] dispatch+0x238/0x40b [ceph]<br />[563217.496350]  [&lt;ffffffffa00f678b&gt;] try_read+0xebf/0x158f [ceph]<br />[563217.496350]  [&lt;ffffffff81058099&gt;] ? trace_hardirqs_on+0xd/0xf<br />[563217.496350]  [&lt;ffffffff81425537&gt;] ? schedule+0x672/0x698<br />[563217.496350]  [&lt;ffffffffa00f8829&gt;] con_work+0x11a/0x6bc [ceph]<br />[563217.496350]  [&lt;ffffffff810477ea&gt;] worker_thread+0x1e8/0x2fa<br />[563217.496350]  [&lt;ffffffff81047791&gt;] ? worker_thread+0x18f/0x2fa<br />[563217.496350]  [&lt;ffffffffa00f870f&gt;] ? con_work+0x0/0x6bc [ceph]<br />[563217.496350]  [&lt;ffffffff8104a8b0&gt;] ? autoremove_wake_function+0x0/0x38<br />[563217.496350]  [&lt;ffffffff81047602&gt;] ? worker_thread+0x0/0x2fa<br />[563217.496350]  [&lt;ffffffff8104a57e&gt;] kthread+0x7d/0x85<br />[563217.496350]  [&lt;ffffffff81003794&gt;] kernel_thread_helper+0x4/0x10<br />[563217.496350]  [&lt;ffffffff81428700&gt;] ? restore_args+0x0/0x30<br />[563217.496350]  [&lt;ffffffff8104a501&gt;] ? kthread+0x0/0x85<br />[563217.496350]  [&lt;ffffffff81003790&gt;] ? kernel_thread_helper+0x0/0x10<br />[563217.496350] Code: 87 bc 00 00 00 74 28 c7 45 c8 00 00 00 00 c7 45 cc 00 00 00 00 eb 2e 4c 8d 7a f0 49 8b 57 10 49 8d 47 10 48 39 c8 0f 18 0a 75 c1 &lt;0f&gt; 0b eb fe 41 8b 47 44 c7 45 c8 01 00 00 00 83 f8 01 19 c0 83 <br />[563217.496350] RIP  [&lt;ffffffffa00f0759&gt;] ceph_put_wrbuffer_cap_refs+0x17e/0x378 [ceph]<br />[563217.496350]  RSP &lt;ffff88011a40da00&gt;<br />[563217.824463] ---[ end trace a58b37fa95bc2739 ]---</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-2" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/2#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 11:00 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> set to <i>4</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-16" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/2#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 04:23 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> changed from <i>4</i> to <i>v2.6.34</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-38" class="journal has-notes">
+    <div id="note-3">
+    <h4><a href="/issues/2#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 11:44 am">almost 5 years</a> ago</h4>
+
+    <div class="wiki" id="journal-38-notes"><p>Fixed by commit:e130642ba</p></div>
+    </div>
+  </div>
+  
+  <div id="change-39" class="journal has-details">
+    <div id="note-4">
+    <h4><a href="/issues/2#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 11:44 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-42" class="journal has-details">
+    <div id="note-5">
+    <h4><a href="/issues/2#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 11:50 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Closed</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-116" class="journal has-details">
+    <div id="note-6">
+    <h4><a href="/issues/2#note-6" class="journal-link">#6</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-05-03" title="05/03/2010 12:10 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-2-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/2.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/2.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bug #3: leaked dentry ref on umount - Linux kernel client - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="9cklO9YjkJMVGSyYKHQffDo1+13+d5zNpwIPcAL62bg=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/3.atom" rel="alternate" title="Linux kernel client - Bug #3: leaked dentry ref on umount" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph-kclient/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph-kclient/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1><a href="/projects/ceph?jump=issues" class="root">Ceph</a> » Linux kernel client</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph-kclient" class="overview">Overview</a></li>
+<li><a href="/projects/ceph-kclient/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph-kclient/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph-kclient" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/projects/ceph-kclient/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph-kclient/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph-kclient/issues/calendar" class="calendar">Calendar</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph-kclient/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph-kclient/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph-kclient/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph-kclient/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph-kclient/issues?query_id=26" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph-kclient/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph-kclient/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph-kclient/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph-kclient/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph-kclient/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph-kclient/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-3-watcher"></span>
+
+
+</div>
+
+
+<h2>Bug #3</h2>
+
+<div class="issue status-5 priority-4 priority-default closed details">
+
+  
+
+<div class="subject">
+<div><h3>leaked dentry ref on umount</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 10:57 am">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph-kclient/activity?from=2010-11-09" title="11/09/2010 10:26 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Closed</td><th class="start-date">Start date:</th><td class="start-date">04/09/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Normal</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to"><a href="/users/3" class="user active">Sage Weil</a></td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version"><a href="/versions/2">v2.6.34</a></td><th></th><td></td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>Suite:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Severity:</th><td></td>
+	<th>ceph-qa-suite:</th><td></td>
+</tr>
+
+
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>After running misc qa stuff (bonnie.sh?), and umount, we get a crashed due to a leaked dentry reference.</p>
+
+
+	<p>ceph2 login: [586316.671261] BUG: Dentry ffff8800dbb97070{i=1000032f38b,n=0100999Get7mcBZ} still in use (1) [unmount of ceph ceph]<br />[586316.681894] ------------[ cut here ]------------<br />[586316.685881] kernel BUG at fs/dcache.c:676!<br />[586316.685881] invalid opcode: 0000 [<a href="/issues/1" class="issue status-5 priority-4 priority-default closed" title="gpf in tcp_sendpage (Closed)">#1</a>] PREEMPT SMP <br />[586316.685881] last sysfs file: /sys/kernel/uevent_seqnum<br />[586316.685881] CPU 0 <br />[586316.685881] Modules linked in: aes_x86_64 aes_generic ceph fan ac battery container ehci_hcd uhci_hcd thermal button processor<br />[586316.685881] <br />[586316.685881] Pid: 4843, comm: umount Not tainted 2.6.34-rc3 <a href="/issues/25" class="issue status-1 priority-3 priority-lowest" title="mdsc: mempool for cap writeback? (New)">#25</a> PDSMi+/PDSMi<br />[586316.685881] RIP: 0010:[&lt;ffffffff810bfb64&gt;]  [&lt;ffffffff810bfb64&gt;] shrink_dcache_for_umount_subtree+0x191/0x270<br />[586316.685881] RSP: 0018:ffff88011dc19dd8  EFLAGS: 00010296<br />[586316.685881] RAX: 000000000000007c RBX: ffff8800dbb97070 RCX: 0000000000006901<br />[586316.685881] RDX: ffff880002600000 RSI: ffff88011dc19b18 RDI: 0000000000000001<br />[586316.685881] RBP: ffff88011dc19e08 R08: ffffff871dc19c88 R09: 0000000000000000<br />[586316.685881] R10: ffffffff8104ea18 R11: ffffffff8104e457 R12: ffff88011f4dbb70<br />[586316.685881] R13: ffff8800dbb97110 R14: 0000000000000000 R15: 0000000000000000<br />[586316.685881] FS:  00007f7d8b3fd730(0000) GS:ffff880002600000(0000) knlGS:0000000000000000<br />[586316.685881] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b<br />[586316.685881] CR2: 00007f7d8aad5ca6 CR3: 000000011bf80000 CR4: 00000000000006f0<br />[586316.685881] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000<br />[586316.685881] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400<br />[586316.685881] Process umount (pid: 4843, threadinfo ffff88011dc18000, task ffff88011ca36b40)<br />[586316.685881] Stack:<br />[586316.685881]  ffff88011e3f1c40 ffff88011bd4c510 ffff88011e3f1778 ffff88011e3f1778<br />[586316.685881] &lt;0&gt; ffffffffa007d160 ffff88011fa46078 ffff88011dc19e28 ffffffff810c0623<br />[586316.685881] &lt;0&gt; ffff88011bd4c510 ffff88011e3f1778 ffff88011dc19e58 ffffffff810b17f7<br />[586316.685881] Call Trace:<br />[586316.685881]  [&lt;ffffffff810c0623&gt;] shrink_dcache_for_umount+0x37/0x47<br />[586316.685881]  [&lt;ffffffff810b17f7&gt;] generic_shutdown_super+0x20/0xcd<br />[586316.685881]  [&lt;ffffffff810b18ef&gt;] kill_anon_super+0x11/0x50<br />[586316.685881]  [&lt;ffffffffa00493fa&gt;] ceph_kill_sb+0x4d/0xa3 [ceph]<br />[586316.685881]  [&lt;ffffffff810b200e&gt;] ? deactivate_super+0x60/0x7d<br />[586316.685881]  [&lt;ffffffff810b2016&gt;] deactivate_super+0x68/0x7d<br />[586316.685881]  [&lt;ffffffff810c5544&gt;] mntput_no_expire+0x78/0xb3<br />[586316.685881]  [&lt;ffffffff810c5a94&gt;] sys_umount+0x2c5/0x2f2<br />[586316.685881]  [&lt;ffffffff810029eb&gt;] system_call_fastpath+0x16/0x1b<br />[586316.685881] Code: 04 00 00 48 8b 40 28 48 85 f6 48 8b 00 74 04 48 8b 56 40 48 89 3c 24 49 89 c1 48 89 de 48 c7 c7 c7 14 57 81 31 c0 e8 c2 6a f7 ff &lt;0f&gt; 0b eb fe 48 8b 43 68 45 31 e4 48 39 c3 74 06 49 89 c4 f0 ff <br />[586316.685881] RIP  [&lt;ffffffff810bfb64&gt;] shrink_dcache_for_umount_subtree+0x191/0x270<br />[586316.685881]  RSP &lt;ffff88011dc19dd8&gt;<br />[586316.938274] ---[ end trace 5a1eefc61694dc66 ]---</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-1" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/3#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 11:00 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> set to <i>4</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-8" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/3#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 02:00 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Assignee</strong> set to <i>Sage Weil</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-15" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/3#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 04:23 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> changed from <i>4</i> to <i>v2.6.34</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-28" class="journal has-notes has-details">
+    <div id="note-4">
+    <h4><a href="/issues/3#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-12" title="04/12/2010 02:25 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Resolved</i></li>
+    </ul>
+    <div class="wiki" id="journal-28-notes"><p>fixed ref leak in dcache readdir, commit:2844a76a25</p></div>
+    </div>
+  </div>
+  
+  <div id="change-35" class="journal has-details">
+    <div id="note-5">
+    <h4><a href="/issues/3#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 11:05 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-41" class="journal has-details">
+    <div id="note-6">
+    <h4><a href="/issues/3#note-6" class="journal-link">#6</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 11:50 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Closed</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-117" class="journal has-details">
+    <div id="note-7">
+    <h4><a href="/issues/3#note-7" class="journal-link">#7</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-05-03" title="05/03/2010 12:10 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-3-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/3.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/3.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bug #4: lockdep warning in socket code - Linux kernel client - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="xNmZsZtdYdO+T3ntfDoNMjmBA1IXT9oq+UqOMFv1GaA=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/4.atom" rel="alternate" title="Linux kernel client - Bug #4: lockdep warning in socket code" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph-kclient/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph-kclient/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1><a href="/projects/ceph?jump=issues" class="root">Ceph</a> » Linux kernel client</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph-kclient" class="overview">Overview</a></li>
+<li><a href="/projects/ceph-kclient/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph-kclient/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph-kclient" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/projects/ceph-kclient/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph-kclient/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph-kclient/issues/calendar" class="calendar">Calendar</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph-kclient/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph-kclient/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph-kclient/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph-kclient/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph-kclient/issues?query_id=26" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph-kclient/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph-kclient/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph-kclient/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph-kclient/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph-kclient/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph-kclient/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph-kclient/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-4-watcher"></span>
+
+
+</div>
+
+
+<h2>Bug #4</h2>
+
+<div class="issue status-5 priority-4 priority-default closed details">
+
+  
+
+<div class="subject">
+<div><h3>lockdep warning in socket code</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 10:58 am">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph-kclient/activity?from=2010-11-09" title="11/09/2010 10:26 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Closed</td><th class="start-date">Start date:</th><td class="start-date">04/09/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Normal</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to">-</td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version"><a href="/versions/2">v2.6.34</a></td><th></th><td></td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>Suite:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Severity:</th><td></td>
+	<th>ceph-qa-suite:</th><td></td>
+</tr>
+
+
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>[ 1615.328733] =======================================================<br />[ 1615.331050] [ INFO: possible circular locking dependency detected ]<br />[ 1615.331050] 2.6.34-rc2 <a href="/issues/22" class="issue status-5 priority-4 priority-default closed" title="BUG at fs/ceph/caps.c:253 (Closed)">#22</a><br />[ 1615.331050] -------------------------------------------------------<br />[ 1615.331050] fixdep/3263 is trying to acquire lock:<br />[ 1615.331050]  (&#38;osdc->request_mutex){+.+...}, at: [&lt;ffffffffa007b66c&gt;] ceph_osdc_start_request+0x4d/0x278 [ceph]<br />[ 1615.331050] <br />[ 1615.331050] but task is already holding lock:<br />[ 1615.331050]  (&#38;mm->mmap_sem){++++++}, at: [&lt;ffffffff810208c0&gt;] do_page_fault+0x104/0x278<br />[ 1615.331050] <br />[ 1615.331050] which lock already depends on the new lock.<br />[ 1615.331050] <br />[ 1615.331050] <br />[ 1615.331050] the existing dependency chain (in reverse order) is:<br />[ 1615.331050] <br />[ 1615.331050] <del>> <a href="/issues/3" class="issue status-5 priority-4 priority-default closed" title="leaked dentry ref on umount (Closed)">#3</a> (&#38;mm</del>>mmap_sem){++++++}:<br />[ 1615.331050]        [&lt;ffffffff81059fd3&gt;] validate_chain+0xa4d/0xd28<br />[ 1615.331050]        [&lt;ffffffff8105aa7f&gt;] __lock_acquire+0x7d1/0x84e<br />[ 1615.331050]        [&lt;ffffffff8105ab84&gt;] lock_acquire+0x88/0xa5<br />[ 1615.331050]        [&lt;ffffffff81094daf&gt;] might_fault+0x90/0xb3<br />[ 1615.331050]        [&lt;ffffffff81390d1e&gt;] memcpy_fromiovecend+0x54/0x8e<br />[ 1615.331050]        [&lt;ffffffff813b6ea7&gt;] ip_generic_getfrag+0x2a/0x8f<br />[ 1615.331050]        [&lt;ffffffff813b5da2&gt;] ip_append_data+0x5f6/0x971<br />[ 1615.331050]        [&lt;ffffffff813d35bf&gt;] udp_sendmsg+0x4e8/0x603<br />[ 1615.331050]        [&lt;ffffffff813d91e3&gt;] inet_sendmsg+0x46/0x53<br />[ 1615.331050]        [&lt;ffffffff813878c1&gt;] sock_sendmsg+0xd4/0xf5<br />[ 1615.331050]        [&lt;ffffffff81387e0f&gt;] sys_sendto+0xdf/0x107<br />[ 1615.331050]        [&lt;ffffffff810029eb&gt;] system_call_fastpath+0x16/0x1b<br />[ 1615.331050] <br />[ 1615.331050] <del>> <a href="/issues/2" class="issue status-5 priority-4 priority-default closed" title="BUG at fs/ceph/caps.c:2178 (Closed)">#2</a> (sk_lock-AF_INET){+.+.+.}:<br />[ 1615.331050]        [&lt;ffffffff81059fd3&gt;] validate_chain+0xa4d/0xd28<br />[ 1615.331050]        [&lt;ffffffff8105aa7f&gt;] __lock_acquire+0x7d1/0x84e<br />[ 1615.331050]        [&lt;ffffffff8105ab84&gt;] lock_acquire+0x88/0xa5<br />[ 1615.331050]        [&lt;ffffffff8138a562&gt;] lock_sock_nested+0xeb/0xff<br />[ 1615.331050]        [&lt;ffffffff813da29d&gt;] inet_stream_connect+0x2b/0x25c<br />[ 1615.331050]        [&lt;ffffffffa006eea6&gt;] try_write+0x26e/0x102c [ceph]<br />[ 1615.331050]        [&lt;ffffffffa00705ba&gt;] con_work+0x126/0x6bc [ceph]<br />[ 1615.529553]        [&lt;ffffffff8104774e&gt;] worker_thread+0x1e8/0x2fa<br />[ 1615.529553]        [&lt;ffffffff8104a4aa&gt;] kthread+0x7d/0x85<br />[ 1615.529553]        [&lt;ffffffff81003794&gt;] kernel_thread_helper+0x4/0x10<br />[ 1615.529553] <br />[ 1615.529553] -> <a href="/issues/1" class="issue status-5 priority-4 priority-default closed" title="gpf in tcp_sendpage (Closed)">#1</a> (&#38;con</del>>mutex){+.+.+.}:<br />[ 1615.529553]        [&lt;ffffffff81059fd3&gt;] validate_chain+0xa4d/0xd28<br />[ 1615.529553]        [&lt;ffffffff8105aa7f&gt;] __lock_acquire+0x7d1/0x84e<br />[ 1615.529553]        [&lt;ffffffff8105ab84&gt;] lock_acquire+0x88/0xa5<br />[ 1615.529553]        [&lt;ffffffff81425727&gt;] mutex_lock_nested+0x62/0x32c<br />[ 1615.529553]        [&lt;ffffffffa0070cd3&gt;] ceph_con_send+0xb3/0x244 [ceph]<br />[ 1615.529553]        [&lt;ffffffffa007b591&gt;] __send_request+0x108/0x196 [ceph]<br />[ 1615.529553]        [&lt;ffffffffa007b794&gt;] ceph_osdc_start_request+0x175/0x278 [ceph]<br />[ 1615.529553]        [&lt;ffffffffa006029d&gt;] ceph_writepages_start+0xb23/0x112a [ceph]<br />[ 1615.529553]        [&lt;ffffffff810849aa&gt;] do_writepages+0x1f/0x28<br />[ 1615.529553]        [&lt;ffffffff810ca5e8&gt;] writeback_single_inode+0xb6/0x1f5<br />[ 1615.529553]        [&lt;ffffffff810cad9b&gt;] writeback_inodes_wb+0x2d1/0x378<br />[ 1615.529553]        [&lt;ffffffff810cafa8&gt;] wb_writeback+0x166/0x1e0<br />[ 1615.529553]        [&lt;ffffffff810cb154&gt;] wb_do_writeback+0x83/0x1d3<br />[ 1615.529553]        [&lt;ffffffff810cb2d2&gt;] bdi_writeback_task+0x2e/0x9b<br />[ 1615.529553]        [&lt;ffffffff8108fd73&gt;] bdi_start_fn+0x71/0xd2<br />[ 1615.529553]        [&lt;ffffffff8104a4aa&gt;] kthread+0x7d/0x85<br />[ 1615.529553]        [&lt;ffffffff81003794&gt;] kernel_thread_helper+0x4/0x10<br />[ 1615.529553] <br />[ 1615.529553] <del>> #0 (&#38;osdc</del>>request_mutex){+.+...}:<br />[ 1615.529553]        [&lt;ffffffff81059cbf&gt;] validate_chain+0x739/0xd28<br />[ 1615.529553]        [&lt;ffffffff8105aa7f&gt;] __lock_acquire+0x7d1/0x84e<br />[ 1615.529553]        [&lt;ffffffff8105ab84&gt;] lock_acquire+0x88/0xa5<br />[ 1615.529553]        [&lt;ffffffff81425727&gt;] mutex_lock_nested+0x62/0x32c<br />[ 1615.529553]        [&lt;ffffffffa007b66c&gt;] ceph_osdc_start_request+0x4d/0x278 [ceph]<br />[ 1615.529553]        [&lt;ffffffffa007d8b6&gt;] ceph_osdc_readpages+0x123/0x222 [ceph]<br />[ 1615.529553]        [&lt;ffffffffa005f4b7&gt;] ceph_readpages+0x193/0x456 [ceph]<br />[ 1615.529553]        [&lt;ffffffff81085bd1&gt;] __do_page_cache_readahead+0x17d/0x1f5<br />[ 1615.529553]        [&lt;ffffffff81085c65&gt;] ra_submit+0x1c/0x20<br />[ 1615.529553]        [&lt;ffffffff81085fab&gt;] ondemand_readahead+0x264/0x277<br />[ 1615.529553]        [&lt;ffffffff81086092&gt;] page_cache_sync_readahead+0x33/0x35<br />[ 1615.529553]        [&lt;ffffffff8107f0d7&gt;] filemap_fault+0x143/0x31f<br />[ 1615.529553]        [&lt;ffffffff810913bf&gt;] __do_fault+0x50/0x415<br />[ 1615.529553]        [&lt;ffffffff810934d9&gt;] handle_mm_fault+0x334/0x6a6<br />[ 1615.529553]        [&lt;ffffffff810209af&gt;] do_page_fault+0x1f3/0x278<br />[ 1615.529553]        [&lt;ffffffff814281ff&gt;] page_fault+0x1f/0x30<br />[ 1615.529553] <br />[ 1615.529553] other info that might help us debug this:<br />[ 1615.529553] <br />[ 1615.529553] 1 lock held by fixdep/3263:<br />[ 1615.529553]  #0:  (&#38;mm->mmap_sem){++++++}, at: [&lt;ffffffff810208c0&gt;] do_page_fault+0x104/0x278<br />[ 1615.529553] <br />[ 1615.529553] stack backtrace:<br />[ 1615.529553] Pid: 3263, comm: fixdep Not tainted 2.6.34-rc2 <a href="/issues/22" class="issue status-5 priority-4 priority-default closed" title="BUG at fs/ceph/caps.c:253 (Closed)">#22</a><br />[ 1615.529553] Call Trace:<br />[ 1615.529553]  [&lt;ffffffff81058f49&gt;] print_circular_bug+0xb3/0xc1<br />[ 1615.529553]  [&lt;ffffffff81059cbf&gt;] validate_chain+0x739/0xd28<br />[ 1615.529553]  [&lt;ffffffff810099d7&gt;] ? native_sched_clock+0x37/0x71<br />[ 1615.824177]  [&lt;ffffffff8105aa7f&gt;] __lock_acquire+0x7d1/0x84e<br />[ 1615.824177]  [&lt;ffffffff8105ab84&gt;] lock_acquire+0x88/0xa5<br />[ 1615.824177]  [&lt;ffffffffa007b66c&gt;] ? ceph_osdc_start_request+0x4d/0x278 [ceph]<br />[ 1615.824177]  [&lt;ffffffffa007b66c&gt;] ? ceph_osdc_start_request+0x4d/0x278 [ceph]<br />[ 1615.824177]  [&lt;ffffffff81425727&gt;] mutex_lock_nested+0x62/0x32c<br />[ 1615.824177]  [&lt;ffffffffa007b66c&gt;] ? ceph_osdc_start_request+0x4d/0x278 [ceph]<br />[ 1615.824177]  [&lt;ffffffffa007b66c&gt;] ceph_osdc_start_request+0x4d/0x278 [ceph]<br />[ 1615.824177]  [&lt;ffffffffa007d8b6&gt;] ceph_osdc_readpages+0x123/0x222 [ceph]<br />[ 1615.824177]  [&lt;ffffffffa005f4b7&gt;] ceph_readpages+0x193/0x456 [ceph]<br />[ 1615.824177]  [&lt;ffffffff810099d7&gt;] ? native_sched_clock+0x37/0x71<br />[ 1615.824177]  [&lt;ffffffff81056580&gt;] ? get_lock_stats+0x19/0x4c<br />[ 1615.824177]  [&lt;ffffffff81085bd1&gt;] __do_page_cache_readahead+0x17d/0x1f5<br />[ 1615.824177]  [&lt;ffffffff81085ad0&gt;] ? __do_page_cache_readahead+0x7c/0x1f5<br />[ 1615.824177]  [&lt;ffffffff8107d848&gt;] ? find_get_page+0xd9/0x12d<br />[ 1615.824177]  [&lt;ffffffff81085c65&gt;] ra_submit+0x1c/0x20<br />[ 1615.916887]  [&lt;ffffffff81085fab&gt;] ondemand_readahead+0x264/0x277<br />[ 1615.916887]  [&lt;ffffffff81086092&gt;] page_cache_sync_readahead+0x33/0x35<br />[ 1615.931403]  [&lt;ffffffff8107f0d7&gt;] filemap_fault+0x143/0x31f<br />[ 1615.931403]  [&lt;ffffffff810913bf&gt;] __do_fault+0x50/0x415<br />[ 1615.931403]  [&lt;ffffffff8105aa99&gt;] ? __lock_acquire+0x7eb/0x84e<br />[ 1615.946963]  [&lt;ffffffff810934d9&gt;] handle_mm_fault+0x334/0x6a6<br />[ 1615.946963]  [&lt;ffffffff810209af&gt;] do_page_fault+0x1f3/0x278<br />[ 1615.946963]  [&lt;ffffffff814281ff&gt;] page_fault+0x1f/0x30</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-4" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/4#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 11:01 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> set to <i>4</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-14" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/4#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-09" title="04/09/2010 04:23 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Target version</strong> changed from <i>4</i> to <i>v2.6.34</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-46" class="journal has-notes">
+    <div id="note-3">
+    <h4><a href="/issues/4#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 02:09 pm">almost 5 years</a> ago</h4>
+
+    <div class="wiki" id="journal-46-notes"><p>use separate class for ceph socket.<br />commit:79cb735c</p></div>
+    </div>
+  </div>
+  
+  <div id="change-47" class="journal has-details">
+    <div id="note-4">
+    <h4><a href="/issues/4#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-04-13" title="04/13/2010 02:09 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-118" class="journal has-details">
+    <div id="note-5">
+    <h4><a href="/issues/4#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph-kclient/activity?from=2010-05-03" title="05/03/2010 12:10 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-4-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/4.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/4.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bug #5: ./rados lspools sometimes hangs after listing all pools? - Ceph - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="sfVRqnsnFEJpQ2pOCn9fM9hNgQRGXfxEFWi6tki0ayc=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/5.atom" rel="alternate" title="Ceph - Bug #5: ./rados lspools sometimes hangs after listing all pools?" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1>Ceph</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph" class="overview">Overview</a></li>
+<li><a href="/projects/ceph/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/rb/projects/ceph/taskboard" class="rb-taskboards">Task board</a></li>
+<li><a href="/projects/ceph/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph/issues/calendar" class="calendar">Calendar</a></li>
+<li><a href="/projects/ceph/repository" class="repository">Repository</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph/issues?query_id=77" class="query">Backport: hammer</a><br /><a href="/projects/ceph/issues?query_id=75" class="query">Backports: firefly</a><br /><a href="/projects/ceph/issues?query_id=68" class="query">Backports: giant</a><br /><a href="/projects/ceph/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph/issues?query_id=47" class="query">Bug queue - no subprojects</a><br /><a href="/projects/ceph/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph/issues?query_id=1" class="query">Feature Requests</a><br /><a href="/projects/ceph/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph/issues?query_id=49" class="query">Priority queue</a><br /><a href="/projects/ceph/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-5-watcher"></span>
+
+
+</div>
+
+
+<h2>Bug #5</h2>
+
+<div class="issue status-5 priority-3 priority-lowest closed details">
+
+  
+
+<div class="subject">
+<div><h3>./rados lspools sometimes hangs after listing all pools?</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:35 pm">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph/activity?from=2010-11-09" title="11/09/2010 10:25 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Closed</td><th class="start-date">Start date:</th><td class="start-date"></td></tr><tr><th class="priority">Priority:</th><td class="priority">Low</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to">-</td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="estimated-hours">Estimated time:</th><td class="estimated-hours">2.00 hours</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>Suite:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Severity:</th><td></td>
+	<th>ceph-qa-suite:</th><td></td>
+</tr>
+
+
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>This is rare and intermittent, but happens occasionally.<br />Best guess so far is that this locks the OSDMap but doesn't explicitly wake up before exiting so if an OSDMap update comes in that thread never wakes and the program hangs.</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-11" class="journal has-notes">
+    <div id="note-1">
+    <h4><a href="/issues/5#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 04:15 pm">almost 5 years</a> ago</h4>
+
+    <div class="wiki" id="journal-11-notes"><p>this was likely a msgr problem, fixed by <a href="/projects/ceph/repository/revisions/3d4a692b590368215cc76098e92cd05b25160976" class="changeset" title="msgr: fail on sd &amp;lt; 0 I saw a case where poll(2) was blocking despite being passed an fd of -1...">3d4a692b5</a>.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-22" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/5#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 10:51 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-27" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/5#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 01:46 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>Closed</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-5-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/5.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/5.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Feature #6: libceph could use a backward-compatible-to function - Ceph - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="ljRHSM7m3Jhz1pNqE1Uei3JNLEIpsrDKn/627H1YQfU=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/6.atom" rel="alternate" title="Ceph - Feature #6: libceph could use a backward-compatible-to function" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1>Ceph</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph" class="overview">Overview</a></li>
+<li><a href="/projects/ceph/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/rb/projects/ceph/taskboard" class="rb-taskboards">Task board</a></li>
+<li><a href="/projects/ceph/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph/issues/calendar" class="calendar">Calendar</a></li>
+<li><a href="/projects/ceph/repository" class="repository">Repository</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph/issues?query_id=77" class="query">Backport: hammer</a><br /><a href="/projects/ceph/issues?query_id=75" class="query">Backports: firefly</a><br /><a href="/projects/ceph/issues?query_id=68" class="query">Backports: giant</a><br /><a href="/projects/ceph/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph/issues?query_id=47" class="query">Bug queue - no subprojects</a><br /><a href="/projects/ceph/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph/issues?query_id=1" class="query">Feature Requests</a><br /><a href="/projects/ceph/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph/issues?query_id=49" class="query">Priority queue</a><br /><a href="/projects/ceph/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-6-watcher"></span>
+
+
+</div>
+
+
+<h2>Feature #6</h2>
+
+<div class="issue status-6 priority-3 priority-lowest closed details">
+
+  
+
+<div class="subject">
+<div><h3>libceph could use a backward-compatible-to function</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:36 pm">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph/activity?from=2010-11-09" title="11/09/2010 10:25 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Rejected</td><th class="start-date">Start date:</th><td class="start-date"></td></tr><tr><th class="priority">Priority:</th><td class="priority">Low</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to">-</td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version">-</td><th></th><td></td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>User Impact:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+
+<tr><th>Story points</th><td>S</td></tr><tr><th>Velocity based estimate</th><td>-</td></tr>
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>If this library is revised it'd be nice to have a way to check compatibility between versions.</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-399" class="journal has-notes has-details">
+    <div id="note-1">
+    <h4><a href="/issues/6#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2010-06-07" title="06/07/2010 10:52 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Rejected</i></li>
+    </ul>
+    <div class="wiki" id="journal-399-notes"><p>Usually this is handled via the shared object versioning scheme.  The bit that doesn't address (I think) is when the ABI adds in some functionality without removing old functionality... but I think a simple get_version type function would do the trick.  Which we have, via ceph_fs's version defines?</p>
+
+
+	<p>Anyway, we can worry about it when there's a need to substantially change the API (and there are enough existing users to worry).</p></div>
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-6-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/6.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/6.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Documentation #7: Document Monitor Commands - Ceph - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="fzHs+mazb4kORk4+Wu2a9y7snCwbjlaqj+2S0f26LL8=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/7.atom" rel="alternate" title="Ceph - Documentation #7: Document Monitor Commands" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1>Ceph</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph" class="overview">Overview</a></li>
+<li><a href="/projects/ceph/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/rb/projects/ceph/taskboard" class="rb-taskboards">Task board</a></li>
+<li><a href="/projects/ceph/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph/issues/calendar" class="calendar">Calendar</a></li>
+<li><a href="/projects/ceph/repository" class="repository">Repository</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph/issues?query_id=77" class="query">Backport: hammer</a><br /><a href="/projects/ceph/issues?query_id=75" class="query">Backports: firefly</a><br /><a href="/projects/ceph/issues?query_id=68" class="query">Backports: giant</a><br /><a href="/projects/ceph/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph/issues?query_id=47" class="query">Bug queue - no subprojects</a><br /><a href="/projects/ceph/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph/issues?query_id=1" class="query">Feature Requests</a><br /><a href="/projects/ceph/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph/issues?query_id=49" class="query">Priority queue</a><br /><a href="/projects/ceph/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-7-watcher"></span>
+
+
+</div>
+
+
+<h2>Documentation #7</h2>
+
+<div class="issue status-3 priority-3 priority-lowest closed details">
+
+  
+
+<div class="subject">
+<div><h3>Document Monitor Commands</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:38 pm">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph/activity?from=2014-07-31" title="07/31/2014 12:51 pm">8 months</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Resolved</td><th class="start-date">Start date:</th><td class="start-date">04/09/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Low</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to"><a href="/users/489" class="user active">John Wilkins</a></td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version">-</td><th></th><td></td></tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Reviewed:</th><td></td>
+</tr>
+
+<tr><th>Story points</th><td>-</td></tr><tr><th>Velocity based estimate</th><td>-</td></tr>
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>There's no centralized area to look for what monitor commands are available, or what permissions they require. (Of course, right now they just all require admin, but that could change.)</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-5738" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/7#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-08-31" title="08/31/2011 06:17 pm">over 3 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Tracker</strong> changed from <i>Support</i> to <i>Documentation</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-5847" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/7#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-08-31" title="08/31/2011 09:57 pm">over 3 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Position</strong> deleted (<del><i>191</i></del>)</li>
+       <li><strong>Position</strong> set to <i>1</i></li>
+       <li><strong>Position</strong> changed from <i>1</i> to <i>839</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-9138" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/7#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/489" class="user active">John Wilkins</a> <a href="/projects/ceph/activity?from=2012-03-12" title="03/12/2012 11:40 am">about 3 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Assignee</strong> set to <i>John Wilkins</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-38828" class="journal has-notes has-details">
+    <div id="note-4">
+    <h4><a href="/issues/7#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2014-07-31" title="07/31/2014 12:51 pm">8 months</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Resolved</i></li>
+    </ul>
+    <div class="wiki" id="journal-38828-notes"><p>ceph -h</p></div>
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-7-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/7.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/7.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Support #8: Document differences from S3 - Ceph - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="o3Yw2MbRtf+9rh04Hf2lxdpxkdhH6bLuySmeJeOnuXY=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/8.atom" rel="alternate" title="Ceph - Support #8: Document differences from S3" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1>Ceph</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph" class="overview">Overview</a></li>
+<li><a href="/projects/ceph/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/rb/projects/ceph/taskboard" class="rb-taskboards">Task board</a></li>
+<li><a href="/projects/ceph/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph/issues/calendar" class="calendar">Calendar</a></li>
+<li><a href="/projects/ceph/repository" class="repository">Repository</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph/issues?query_id=77" class="query">Backport: hammer</a><br /><a href="/projects/ceph/issues?query_id=75" class="query">Backports: firefly</a><br /><a href="/projects/ceph/issues?query_id=68" class="query">Backports: giant</a><br /><a href="/projects/ceph/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph/issues?query_id=47" class="query">Bug queue - no subprojects</a><br /><a href="/projects/ceph/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph/issues?query_id=1" class="query">Feature Requests</a><br /><a href="/projects/ceph/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph/issues?query_id=49" class="query">Priority queue</a><br /><a href="/projects/ceph/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-8-watcher"></span>
+
+
+</div>
+
+
+<h2>Support #8</h2>
+
+<div class="issue status-5 priority-4 priority-default closed details">
+
+  
+
+<div class="subject">
+<div><h3>Document differences from S3</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:46 pm">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph/activity?from=2011-03-20" title="03/20/2011 09:20 pm">about 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Closed</td><th class="start-date">Start date:</th><td class="start-date"></td></tr><tr><th class="priority">Priority:</th><td class="priority">Normal</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to"><a href="/users/5" class="user active">Greg Farnum</a></td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">radosgw</td><th class="estimated-hours">Estimated time:</th><td class="estimated-hours">1.00 hour</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+<tr>
+	<th>Reviewed:</th><td></td>
+</tr>
+
+
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>RGW is a pretty good implementation, but it does have some differences from the S3 api. Document these.</p>
+
+
+	<p>They include: lack of S3's new versioning, no email-based ACLs (though the required framework is largely in-place), all users getting anon_user permissions, and rgw doesn't watch for replayed operations (this is an S3 security measure to prevent attacks on somebody's secret ID).</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-5" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/8#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:47 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Due date</strong> set to <i>04/14/2010</i></li>
+       <li><strong>Assignee</strong> set to <i>Greg Farnum</i></li>
+       <li><strong>Estimated time</strong> set to <i>1.00</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-9" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/8#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 02:01 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Tracker</strong> changed from <i>Bug</i> to <i>Support</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-19" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/8#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 09:59 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Start date</strong> changed from <i>04/09/2010</i> to <i>04/14/2010</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-21" class="journal has-notes">
+    <div id="note-4">
+    <h4><a href="/issues/8#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/4" class="user active">Yehuda Sadeh</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 10:16 am">almost 5 years</a> ago</h4>
+
+    <div class="wiki" id="journal-21-notes"><p>We don't support HTTP POST at the moment.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-56" class="journal has-notes has-details">
+    <div id="note-5">
+    <h4><a href="/issues/8#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-14" title="04/14/2010 05:09 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Due date</strong> deleted (<del><i>04/14/2010</i></del>)</li>
+       <li><strong>Start date</strong> deleted (<del><i>04/14/2010</i></del>)</li>
+    </ul>
+    <div class="wiki" id="journal-56-notes"><p>I'll probably just do this when I do the panel info for Kyle, when he asks. It doesn't need a due date.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-241" class="journal has-notes has-details">
+    <div id="note-6">
+    <h4><a href="/issues/8#note-6" class="journal-link">#6</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-05-18" title="05/18/2010 12:20 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Closed</i></li>
+    </ul>
+    <div class="wiki" id="journal-241-notes"><p>It's on the wiki, now, anyway.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-2871" class="journal has-details">
+    <div id="note-7">
+    <h4><a href="/issues/8#note-7" class="journal-link">#7</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-03-20" title="03/20/2011 09:20 pm">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Category</strong> set to <i>radosgw</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-2913" class="journal has-details">
+    <div id="note-8">
+    <h4><a href="/issues/8#note-8" class="journal-link">#8</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-03-20" title="03/20/2011 09:20 pm">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Project</strong> changed from <i>RADOS Gateway</i> to <i>Ceph</i></li>
+       <li><strong>Category</strong> changed from <i>radosgw</i> to <i>radosgw</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-8-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/8.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/8.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Feature #9: Access unimported data - Ceph - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="mvTqxWN0Fo898bCiET5f5CoywV8PmbwNtJnfKcGMVWg=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/9.atom" rel="alternate" title="Ceph - Feature #9: Access unimported data" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1>Ceph</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph" class="overview">Overview</a></li>
+<li><a href="/projects/ceph/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/rb/projects/ceph/taskboard" class="rb-taskboards">Task board</a></li>
+<li><a href="/projects/ceph/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph/issues/calendar" class="calendar">Calendar</a></li>
+<li><a href="/projects/ceph/repository" class="repository">Repository</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph/issues?query_id=77" class="query">Backport: hammer</a><br /><a href="/projects/ceph/issues?query_id=75" class="query">Backports: firefly</a><br /><a href="/projects/ceph/issues?query_id=68" class="query">Backports: giant</a><br /><a href="/projects/ceph/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph/issues?query_id=47" class="query">Bug queue - no subprojects</a><br /><a href="/projects/ceph/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph/issues?query_id=1" class="query">Feature Requests</a><br /><a href="/projects/ceph/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph/issues?query_id=49" class="query">Priority queue</a><br /><a href="/projects/ceph/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-9-watcher"></span>
+
+
+</div>
+
+
+<h2>Feature #9</h2>
+
+<div class="issue status-8 priority-3 priority-lowest closed details">
+
+  
+
+<div class="subject">
+<div><h3>Access unimported data</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:50 pm">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph/activity?from=2011-03-28" title="03/28/2011 11:48 am">about 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Won&#x27;t Fix</td><th class="start-date">Start date:</th><td class="start-date">04/09/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Low</td><th class="due-date">Due date:</th><td class="due-date"></td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to">-</td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="todo" style="width: 100%;"></td></tr></table><p class="pourcent">0%</p></td></tr><tr><th class="category">Category:</th><td class="category">radosgw</td><th class="estimated-hours">Estimated time:</th><td class="estimated-hours">6.00 hours</td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version">-</td><th class="spent-time">Spent time:</th><td class="spent-time">-</td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>User Impact:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+
+<tr><th>Story points</th><td>3.0</td></tr><tr><th>Velocity based estimate</th><td>-</td></tr>
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>Right now, rgw can only access data which has been added through rgw, even if a user's auid is set in rgw and matches that used on the data.<br />Due to architectural issues with rgw, fixing this may be a bit messy, but if demand comes up rgw should be able to auto-generate default ACLs and allow access to data which a user is known to own (both pools and objects).</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-1586" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/9#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2010-11-08" title="11/08/2010 10:44 pm">over 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Estimated time</strong> set to <i>6.00</i></li>
+       <li><strong>Source</strong> set to <i>3</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-2362" class="journal has-details">
+    <div id="note-2">
+    <h4><a href="/issues/9#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-02-04" title="02/04/2011 02:08 pm">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Position</strong> deleted (<del><i>537</i></del>)</li>
+       <li><strong>Position</strong> set to <i>1</i></li>
+       <li><strong>Position</strong> changed from <i>1</i> to <i>560</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-2370" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/9#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/4" class="user active">Yehuda Sadeh</a> <a href="/projects/ceph/activity?from=2011-02-04" title="02/04/2011 02:23 pm">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Position</strong> deleted (<del><i>557</i></del>)</li>
+       <li><strong>Position</strong> set to <i>1</i></li>
+       <li><strong>Position</strong> changed from <i>1</i> to <i>561</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-2865" class="journal has-details">
+    <div id="note-4">
+    <h4><a href="/issues/9#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-03-20" title="03/20/2011 09:18 pm">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Project</strong> changed from <i>RADOS Gateway</i> to <i>Ceph</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-2867" class="journal has-details">
+    <div id="note-5">
+    <h4><a href="/issues/9#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-03-20" title="03/20/2011 09:18 pm">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Category</strong> set to <i>radosgw</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-3139" class="journal has-details">
+    <div id="note-6">
+    <h4><a href="/issues/9#note-6" class="journal-link">#6</a>
+    
+    Updated by <a href="/users/3" class="user active">Sage Weil</a> <a href="/projects/ceph/activity?from=2011-03-28" title="03/28/2011 11:48 am">about 4 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Won&#x27;t Fix</i></li>
+       <li><strong>Position</strong> deleted (<del><i>585</i></del>)</li>
+       <li><strong>Position</strong> set to <i>585</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-9-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/9.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/9.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Feature #10: osd: Replace ALLOW_MESSAGES_FROM macro - Ceph - Ceph </title>
+<meta name="description" content="Redmine" />
+<meta name="keywords" content="issue,bug,tracker" />
+<meta content="authenticity_token" name="csrf-param" />
+<meta content="7Nkr1b+p3l3NNMyq/Af4zHYo02Nt0y3KVnPBEI/iHVM=" name="csrf-token" />
+<link rel='shortcut icon' href='/favicon.ico?1363725110' />
+<link href="/stylesheets/jquery/jquery-ui-1.8.21.css?1363725110" media="all" rel="stylesheet" type="text/css" />
+<link href="/themes/ceph/stylesheets/application.css?1361414918" media="all" rel="stylesheet" type="text/css" />
+
+<script src="/javascripts/jquery-1.7.2-ui-1.8.21-ujs-2.0.3.js?1363725110" type="text/javascript"></script>
+<script src="/javascripts/application.js?1363725110" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(window).load(function(){ warnLeavingUnsaved('The current page contains unsaved text that will be lost if you leave this page.'); });
+//]]>
+</script>
+
+<!-- rb_include_scripts -->
+<link href="/plugin_assets/redmine_backlogs/stylesheets/jquery/jquery.jqplot.min.css?1359518270" media="screen" rel="stylesheet" type="text/css" />
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.verticalfix-min.js?1364616181" type="text/javascript"></script>
+<!--[if IE]>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/excanvas.js?1364616182" type="text/javascript"></script>
+<![endif]-->
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/jquery.jqplot.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.highlighter.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasTextRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.enhancedLegendRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.jqplot/plugins/jqplot.dateAxisRenderer.min.js?1364616182" type="text/javascript"></script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/jquery/jquery.cookie.js?1364616182" type="text/javascript"></script>
+
+
+<script src="/plugin_assets/redmine_backlogs/javascripts/common.js?1364616181" type="text/javascript"></script>
+<script type="text/javascript"
+        src="/rb/server_variables.js">
+</script>
+<script src="/plugin_assets/redmine_backlogs/javascripts/burndown.js?1364616181" type="text/javascript"></script>
+
+<!-- page specific tags -->
+    <link href="http://tracker.ceph.com/issues/10.atom" rel="alternate" title="Ceph - Feature #10: osd: Replace ALLOW_MESSAGES_FROM macro" type="application/atom+xml" />
+<script src="/javascripts/context_menu.js?1363725110" type="text/javascript"></script><link href="/stylesheets/context_menu.css?1363725110" media="screen" rel="stylesheet" type="text/css" /></head>
+<body class="theme-Ceph controller-issues action-show">
+<div id="wrapper">
+<div id="wrapper2">
+<div id="wrapper3">
+<div id="top-menu">
+    <div id="account">
+        <ul><li><a href="/login" class="login">Sign in</a></li>
+<li><a href="/account/register" class="register">Register</a></li></ul>    </div>
+    
+    <ul><li><a href="/" class="home">Home</a></li>
+<li><a href="/projects" class="projects">Projects</a></li>
+<li><a href="http://www.redmine.org/guide" class="help">Help</a></li></ul></div>
+
+<div id="header">
+    <div id="quick-search">
+        <form accept-charset="UTF-8" action="/projects/ceph/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div>
+        <input name="issues" type="hidden" value="1" />
+        <label for='q'>
+          <a href="/projects/ceph/search" accesskey="4">Search</a>:
+        </label>
+        <input accesskey="f" class="small" id="q" name="q" size="20" type="text" />
+</form>        
+    </div>
+
+        <h1>Ceph</h1>
+
+    <div id="main-menu">
+        <ul><li><a href="/projects/ceph" class="overview">Overview</a></li>
+<li><a href="/projects/ceph/activity" class="activity">Activity</a></li>
+<li><a href="/projects/ceph/roadmap" class="roadmap">Roadmap</a></li>
+<li><a href="/rb/master_backlog/ceph" class="rb-master-backlogs">Backlogs</a></li>
+<li><a href="/rb/projects/ceph/taskboard" class="rb-taskboards">Task board</a></li>
+<li><a href="/projects/ceph/issues" class="issues selected">Issues</a></li>
+<li><a href="/projects/ceph/issues/gantt" class="gantt">Gantt</a></li>
+<li><a href="/projects/ceph/issues/calendar" class="calendar">Calendar</a></li>
+<li><a href="/projects/ceph/repository" class="repository">Repository</a></li></ul>
+    </div>
+</div>
+
+<div id="main" class="">
+    <div id="sidebar">
+          <h3>Issues</h3>
+<a href="/projects/ceph/issues?set_filter=1">View all issues</a><br />
+<a href="/projects/ceph/issues/report">Summary</a><br />
+
+
+  <a href="/projects/ceph/issues/calendar">Calendar</a><br />
+  <a href="/projects/ceph/issues/gantt">Gantt</a><br />
+
+
+<h3>Custom queries</h3><a href="/projects/ceph/issues?query_id=36" class="query">Backlog</a><br /><a href="/projects/ceph/issues?query_id=77" class="query">Backport: hammer</a><br /><a href="/projects/ceph/issues?query_id=75" class="query">Backports: firefly</a><br /><a href="/projects/ceph/issues?query_id=68" class="query">Backports: giant</a><br /><a href="/projects/ceph/issues?query_id=27" class="query">Bug queue</a><br /><a href="/projects/ceph/issues?query_id=47" class="query">Bug queue - no subprojects</a><br /><a href="/projects/ceph/issues?query_id=40" class="query">Bug triage</a><br /><a href="/projects/ceph/issues?query_id=1" class="query">Feature Requests</a><br /><a href="/projects/ceph/issues?query_id=30" class="query">Feedback</a><br /><a href="/projects/ceph/issues?query_id=7" class="query">My issues</a><br /><a href="/projects/ceph/issues?query_id=32" class="query">Need Review</a><br /><a href="/projects/ceph/issues?query_id=60" class="query">Pending backport</a><br /><a href="/projects/ceph/issues?query_id=49" class="query">Priority queue</a><br /><a href="/projects/ceph/issues?query_id=45" class="query">Product Backlog Scrub</a>
+
+
+
+
+        
+    </div>
+
+    <div id="content">
+        
+        <div class="contextual">
+
+
+<span class="issue-10-watcher"></span>
+
+
+</div>
+
+
+<h2>Feature #10</h2>
+
+<div class="issue status-3 priority-4 priority-default closed details">
+
+  
+
+<div class="subject">
+<div><h3>osd: Replace ALLOW_MESSAGES_FROM macro</h3></div>
+</div>
+        <p class="author">
+        Added by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-09" title="04/09/2010 12:55 pm">almost 5 years</a> ago.
+        Updated <a href="/projects/ceph/activity?from=2010-11-09" title="11/09/2010 10:25 am">over 4 years</a> ago.
+        </p>
+
+<table class="attributes">
+<tr><th class="status">Status:</th><td class="status">Resolved</td><th class="start-date">Start date:</th><td class="start-date">04/12/2010</td></tr><tr><th class="priority">Priority:</th><td class="priority">Normal</td><th class="due-date">Due date:</th><td class="due-date">04/12/2010</td></tr><tr><th class="assigned-to">Assignee:</th><td class="assigned-to"><a href="/users/5" class="user active">Greg Farnum</a></td><th class="progress">% Done:</th><td class="progress"><table class="progress" style="width: 80px;"><tr><td class="closed" style="width: 100%;"></td></tr></table><p class="pourcent">100%</p></td></tr><tr><th class="category">Category:</th><td class="category">OSD</td><th class="spent-time">Spent time:</th><td class="spent-time"><a href="/projects/ceph/issues/10/time_entries">3.50 hours</a></td></tr><tr><th class="fixed-version">Target version:</th><td class="fixed-version">-</td><th></th><td></td></tr>
+<tr>
+	<th>Source:</th><td></td>
+	<th>Reviewed:</th><td></td>
+</tr>
+<tr>
+	<th>Backport:</th><td></td>
+	<th>User Impact:</th><td></td>
+</tr>
+<tr>
+	<th>Tags:</th><td></td>
+	<th>Affected Versions:</th><td></td>
+</tr>
+
+<tr><th>Story points</th><td>S</td></tr><tr><th>Velocity based estimate</th><td>-</td></tr>
+</table>
+
+<hr />
+<div class="description">
+  <div class="contextual">
+  
+  </div>
+
+  <p><strong>Description</strong></p>
+  <div class="wiki">
+  <p>This is in OSD::_dispatch. This macro is used as a basic permission checker, but any permissions should be dealt with through OSDCaps.</p>
+
+
+	<p>If necessary, enhance the system's caps data members and functions so this makes sense and is effective.</p>
+  </div>
+</div>
+
+
+
+
+
+
+</div>
+
+
+<div id="history">
+<h3>History</h3>
+  <div id="change-23" class="journal has-details">
+    <div id="note-1">
+    <h4><a href="/issues/10#note-1" class="journal-link">#1</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 11:27 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Due date</strong> set to <i>04/12/2010</i></li>
+       <li><strong>Assignee</strong> set to <i>Greg Farnum</i></li>
+       <li><strong>Start date</strong> changed from <i>04/09/2010</i> to <i>04/12/2010</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-30" class="journal has-notes has-details">
+    <div id="note-2">
+    <h4><a href="/issues/10#note-2" class="journal-link">#2</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 03:36 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Category</strong> set to <i>OSD</i></li>
+       <li><strong>% Done</strong> changed from <i>0</i> to <i>100</i></li>
+    </ul>
+    <div class="wiki" id="journal-30-notes"><p>Added is_mon(), is_osd(), is_mds() functions to OSDCaps. These use a new peer_type variable which is set by the OSD when the rest of the OSDCap is filled in.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-31" class="journal has-details">
+    <div id="note-3">
+    <h4><a href="/issues/10#note-3" class="journal-link">#3</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-12" title="04/12/2010 03:38 pm">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>New</i> to <i>Resolved</i></li>
+    </ul>
+    
+    </div>
+  </div>
+  
+  <div id="change-44" class="journal has-notes has-details">
+    <div id="note-4">
+    <h4><a href="/issues/10#note-4" class="journal-link">#4</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-13" title="04/13/2010 11:50 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>Resolved</i> to <i>In Progress</i></li>
+    </ul>
+    <div class="wiki" id="journal-44-notes"><p>Ugh, I thought Session was always set in the OSD but it turns out that's not the case.</p></div>
+    </div>
+  </div>
+  
+  <div id="change-45" class="journal has-notes has-details">
+    <div id="note-5">
+    <h4><a href="/issues/10#note-5" class="journal-link">#5</a>
+    
+    Updated by <a href="/users/5" class="user active">Greg Farnum</a> <a href="/projects/ceph/activity?from=2010-04-13" title="04/13/2010 11:56 am">almost 5 years</a> ago</h4>
+
+    <ul class="details">
+       <li><strong>Status</strong> changed from <i>In Progress</i> to <i>Resolved</i></li>
+    </ul>
+    <div class="wiki" id="journal-45-notes"><p>Okay, new message_from_mon function to hide some of the complexity in getting sessions, and checks for session != NULL in all the appropriate places.</p></div>
+    </div>
+  </div>
+  
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+<div class="contextual">
+
+
+<span class="issue-10-watcher"></span>
+
+
+</div>
+
+
+<div style="clear: both;"></div>
+
+<p class="other-formats">Also available in:  <span><a href="/issues/10.atom" class="atom" rel="nofollow">Atom</a></span>
+  <span><a href="/issues/10.pdf" class="pdf" rel="nofollow">PDF</a></span>
+</p>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+contextMenuInit('/issues/context_menu')
+//]]>
+</script>
+
+        
+        <div style="clear:both;"></div>
+    </div>
+</div>
+</div>
+
+<div id="ajax-indicator" style="display:none;"><span>Loading...</span></div>
+<div id="ajax-modal" style="display:none;"></div>
+
+<div id="footer">
+  <div class="bgl"><div class="bgr">
+    Powered by <a href="http://www.redmine.org/">Redmine</a> &copy; 2006-2012 Jean-Philippe Lang
+  </div></div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
